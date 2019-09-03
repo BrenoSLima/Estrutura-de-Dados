@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#define N 10
+
+//=================================================================================
+
+typedef struct {
+    int key;
+} Objeto;
+
+typedef struct NoPilha *ptrNoPilha;
+
+typedef struct {
+    Objeto obj;
+    ptrNoPilha proximo;
+} noPilha;
+
+typedef struct {
+    ptrNoPilha topo;
+    int tamanho;
+} pilhaDinamica;
+
+
+//=================================================================================
+
+void iniciaDinamica(pilhaDinamica *pilhaDinamica) {
+    pilhaDinamica->topo = NULL;
+    pilhaDinamica->tamanho = 0;
+}
+
+bool vaziaDinamica(pilhaDinamica *pilhaDinamica) {
+    return (pilhaDinamica->topo == NULL);
+}
+
+void empilha(Objeto obj, pilhaDinamica *pilhaDinamica) {
+    
+    
+    
+    ptrNoPilha *aux = NULL;
+    aux = (noPilha*) malloc(sizeof (noPilha));
+    aux->obj = obj;
+    aux->proximo = pilhaDinamica->topo;
+    pilhaDinamica->topo = aux;
+    pilhaDinamica->tamanho++;
+    
+
+
+}
+
+void desempilha(pilhaDinamica *pilhaDinamica) {
+
+}
+
+
+//=================================================================================
+
+void arqEntrada(pilhaDinamica *pilhaValores) {
+    
+
+    FILE *arqEntrada = NULL;
+    arqEntrada = fopen("entrada.txt", "r");
+
+    if (arqEntrada == NULL) {
+        printf("Erro.");
+        exit(1);
+    }
+    
+    char verificacao;
+    fscanf(arqEntrada, "%c", &verificacao);
+    printf("%c", verificacao);
+    
+    if(verificacao == 'd'){
+        escolhaDinamica(&pilhaValores);
+    }
+    else if (verificacao == 'e'){
+        escolhaEstatica();
+    }
+    else{
+        printf("Erro.");
+        exit(1);
+    }
+
+}
+
+void escolhaDinamica(pilhaDinamica *pilhaValores){
+    
+    int objetoAux;
+    
+    iniciaDinamica(&pilhaValores);
+    while(feof(arqEntrada) == 0){
+       
+        fscanf(arqEntrada, "%d", &objetoAux);
+        empilha(objetoAux, &pilhaValores);
+    
+    }
+}
+
+void escolhaEstatica(){
+    
+  
+}
+
+int main(int argc, char** argv) {
+
+    pilhaDinamica pilhaValores;
+
+    arqEntrada(&pilhaValores);
+
+    return (EXIT_SUCCESS);
+}
+
