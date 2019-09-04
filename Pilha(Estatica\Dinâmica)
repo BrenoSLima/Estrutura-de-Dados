@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define N 10
+#define N 100
 
 //=================================================================================
 
 typedef struct {
     int key;
 } Objeto;
+
+//=================================================================================
 
 typedef struct NoPilha *ptrNoPilha;
 
@@ -21,7 +23,6 @@ typedef struct {
     int tamanho;
 } pilhaDinamica;
 
-
 //=================================================================================
 
 void iniciaDinamica(pilhaDinamica *pilhaDinamica) {
@@ -33,30 +34,122 @@ bool vaziaDinamica(pilhaDinamica *pilhaDinamica) {
     return (pilhaDinamica->topo == NULL);
 }
 
-void empilha(Objeto obj, pilhaDinamica *pilhaDinamica) {
-    
-    
-    
+void pushDinamica(Objeto obj, pilhaDinamica *pilhaDinamica) {
+
     ptrNoPilha *aux = NULL;
     aux = (noPilha*) malloc(sizeof (noPilha));
-    aux->obj = obj;
-    aux->proximo = pilhaDinamica->topo;
+  //  aux->obj = obj;
+  //  aux->proximo = pilhaDinamica->topo;
     pilhaDinamica->topo = aux;
     pilhaDinamica->tamanho++;
+
+}
+
+void popDinamica(pilhaDinamica *pilhaDinamica) {
+
+}
+
+//=================================================================================
+
+typedef struct {
+    Objeto vetor[100];
+    int topo;
+} pilhaEstatica;
+
+//=================================================================================
+
+void iniciaEstatica(pilhaEstatica *pilhaEst) {
+    pilhaEst->topo = 0;
+}
+
+bool cheiaEstatica(pilhaEstatica *pilhaEst) {
     
-
-
+    if (pilhaEst->topo == N) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
-void desempilha(pilhaDinamica *pilhaDinamica) {
+bool vaziaEstatica(pilhaEstatica *pilhaEst) {
 
+    if (pilhaEst->topo == 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
+void pushEstatica(Objeto obj ,pilhaEstatica *pilhaEst){
+    
+    if(cheiaEstatica(pilhaEst) == false){
+        pilhaEst->vetor[pilhaEst->topo].key = obj;
+        pilhaEst->topo += 1;
+    }else{
+        printf("Pilha cheia seu otário");
+    }
+}
+
+Objeto popEstatica(Objeto obj ,pilhaEstatica *pilhaEst){
+    
+    if(vaziaEstatica(pilhaEst) == false){
+        obj.key = pilhaEst->vetor[pilhaEst->topo];
+        pilhaEst->topo -= 1;
+        
+        return obj;
+    }else{
+        printf("Pilha já vazia seu otário");
+    }
+    
+}
+
 
 
 //=================================================================================
 
-void arqEntrada(pilhaDinamica *pilhaValores) {
+void escolhaDinamica(pilhaDinamica *pilhaValores) {
+
+    int objetoAux;
+
+    iniciaDinamica(&pilhaValores);
+    while (feof(arqEntrada) == 0) {
+
+        fscanf(arqEntrada, "%d", &objetoAux);
+        //empilha(objetoAux, &pilhaValores);
+
+    }
+}
+
+//=================================================================================
+
+int binario(int num) {
+
+    if (num == 0)
+        return 0;
+    else
+        return (num % 2 + 10 * binario(num / 2));
     
+}
+
+void escolhaEstatica(pilhaDinamica *pilhaValores) {
+
+    pilhaEstatica pilhaEst;
+    Objeto auxiliar = 0;
+    
+    iniciaEstatica(&pilhaEst);
+    
+    
+    for(int i = pilhaValores->topo; i>=0; i++){
+        auxiliar.key = popDinamica(&pilhaValores);
+        auxiliar.key = binario(auxiliar.key);
+        pushEstatica(auxiliar, pilhaEst);
+    }
+    
+}
+
+//=================================================================================
+
+void arqEntrada(pilhaDinamica *pilhaValores) {
+
 
     FILE *arqEntrada = NULL;
     arqEntrada = fopen("entrada.txt", "r");
@@ -65,41 +158,25 @@ void arqEntrada(pilhaDinamica *pilhaValores) {
         printf("Erro.");
         exit(1);
     }
-    
+
     char verificacao;
     fscanf(arqEntrada, "%c", &verificacao);
-    printf("%c", verificacao);
     
-    if(verificacao == 'd'){
+    //Iniciação da pilhaValores
+
+    if (verificacao == 'd') {
         escolhaDinamica(&pilhaValores);
-    }
-    else if (verificacao == 'e'){
-        escolhaEstatica();
-    }
-    else{
+    } else if (verificacao == 'e') {
+        escolhaEstatica(&pilhaValores);
+    } else {
         printf("Erro.");
         exit(1);
     }
 
 }
 
-void escolhaDinamica(pilhaDinamica *pilhaValores){
-    
-    int objetoAux;
-    
-    iniciaDinamica(&pilhaValores);
-    while(feof(arqEntrada) == 0){
-       
-        fscanf(arqEntrada, "%d", &objetoAux);
-        empilha(objetoAux, &pilhaValores);
-    
-    }
-}
 
-void escolhaEstatica(){
-    
-  
-}
+//=================================================================================
 
 int main(int argc, char** argv) {
 
@@ -109,4 +186,3 @@ int main(int argc, char** argv) {
 
     return (EXIT_SUCCESS);
 }
-
