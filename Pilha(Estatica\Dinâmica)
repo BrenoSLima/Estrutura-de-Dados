@@ -36,10 +36,10 @@ bool vaziaDinamica(pilhaDinamica *pilhaDinamica) {
 
 void pushDinamica(Objeto obj, pilhaDinamica *pilhaDinamica) {
 
-    ptrNoPilha *aux = NULL;
-    aux = (noPilha*) malloc(sizeof (noPilha));
-  //  aux->obj = obj;
-  //  aux->proximo = pilhaDinamica->topo;
+    ptrNoPilha aux = NULL;
+    aux = (ptrNoPilha*) malloc(sizeof (noPilha));
+    aux->obj = obj;
+    aux->proximo = pilhaDinamica->topo;
     pilhaDinamica->topo = aux;
     pilhaDinamica->tamanho++;
 
@@ -47,6 +47,13 @@ void pushDinamica(Objeto obj, pilhaDinamica *pilhaDinamica) {
 
 void popDinamica(pilhaDinamica *pilhaDinamica) {
 
+    if(vaziaDinamica(pilhaDinamica)){
+        printf("Erro.");
+    }else{
+        *obj = pilhaDinamica->topo.
+    }
+    
+    
 }
 
 //=================================================================================
@@ -181,6 +188,8 @@ void arqEntrada(pilhaDinamica *pilhaValores) {
 int main(int argc, char** argv) {
 
     pilhaDinamica pilhaValores;
+    
+    printf("%s", argv[1]);
 
     arqEntrada(&pilhaValores);
 
