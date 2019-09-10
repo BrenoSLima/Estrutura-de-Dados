@@ -1,0 +1,150 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#define N 10
+
+
+typedef struct {
+    int key;
+} Objeto;
+
+typedef struct noFila *ptrNoFila;
+
+typedef struct noFila {
+    ptrNoFila proximo;
+    Objeto obj;
+} noFila;
+
+typedef struct {
+    ptrNoFila inicio;
+    ptrNoFila fim;
+    int contador;
+} filaDinamica;
+
+void iniciar(filaDinamica *fila) {
+    
+    fila->inicio = NULL;
+    fila->fim = NULL;
+    fila->contador = 0;
+    
+}
+
+bool estaVazia(filaDinamica *fila) {
+    return(fila->contador == 0);
+}
+
+void inserir(filaDinamica *fila) {
+
+    ptrNoFila aux;
+    
+    Objeto x;
+    
+    printf("Qual elemento inserir: ");
+    scanf("%i", &x.key);
+    
+    aux = (ptrNoFila) malloc(sizeof (noFila));
+
+    aux->obj = x;
+
+    if (fila->contador == 0) {
+
+        fila->inicio = aux;
+        fila->fim = aux;
+        aux->proximo = NULL;
+
+    } else {
+        
+        aux->proximo = NULL;
+        fila->fim->proximo = aux;
+        fila->fim = fila->fim->proximo;
+
+    }
+    
+    fila->contador++;
+    
+}
+
+Objeto remover(filaDinamica *fila) {
+
+    if(!estaVazia == 0){
+        printf("Tá vazia deu otário");
+        
+    }else{
+    
+    ptrNoFila aux;
+
+    aux = fila->inicio;
+    fila->inicio = fila->inicio->proximo;
+    
+    Objeto ret = aux->obj;
+    free(aux);
+    
+    fila->contador--;
+    
+    return(ret);
+    
+    }
+}
+
+void imprimeFila(filaDinamica *fila) {
+
+    ptrNoFila aux; 
+
+    aux = fila->inicio;
+    
+    while(aux->proximo != NULL){
+        printf("%i", aux->obj.key);
+        aux = aux->proximo;
+    }
+
+}
+
+int main(int argc, char** argv) {
+
+    filaDinamica fila;
+    int escolha = 0;
+    Objeto obj;
+
+    do {
+        printf("[1] - Inicia fila\n"
+                "[2] - Está vazia\n"
+                "[4] - Enqueue\n"
+                "[4] - Dequeue\n"
+                "[5] - Size\n");
+        scanf("%i", &escolha);
+
+        switch (escolha) {
+            case 1:
+                iniciar(&fila);
+                system("clear");
+                printf("Fila iniciada\n");
+                break;
+            case 2:
+                system("clear");
+                if (estaVazia(&fila) == 1) {
+                    printf("Vazia.\n");
+                } else {
+                    printf("Não vazia.\n");
+                }
+                break;
+            case 3:
+                inserir(&fila);
+                system("clear");
+                imprimeFila(&fila);
+                break;
+            case 4:
+                system("clear");
+                obj = remover(&fila);
+                imprimeFila(&fila);
+                break;
+            case 5:
+                system("clear");
+                printf("Tamanho: %i\n", fila.contador);
+                imprimeFila(&fila);
+                break;
+
+        }
+    } while (1);
+
+    return (EXIT_SUCCESS);
+}
