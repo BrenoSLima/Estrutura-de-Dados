@@ -1,0 +1,252 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#define N 100
+
+
+//=================================================================================
+
+typedef struct {
+    int key;
+} Objeto;
+
+//                          PILHA ESTATICA
+//=================================================================================
+
+typedef struct {
+    int topo;
+    Objeto array[N];
+} PilhaEstatica;
+
+//                          PILHA DINAMICA
+//=================================================================================
+
+typedef struct NoPilha *PtrNoPilha;
+
+typedef struct NoPilha {
+    PtrNoPilha proximo;
+    Objeto obj;
+} NoPilha;
+
+typedef struct {
+    PtrNoPilha topo;
+    int tamanho;
+} PilhaDinamica;
+
+//=================================================================================
+
+int binario(int num) {
+
+    if (num == 0)
+        return 0;
+    else
+        return (num % 2 + 10 * binario(num / 2));
+
+}
+
+//=================================================================================
+//=================================================================================
+//=================================================================================
+//============================Pilha Dinamica=======================================
+//=================================================================================
+//=================================================================================
+//=================================================================================
+
+void iniciaDinamica(PilhaDinamica *pilhaDinamica) {
+    pilhaDinamica->topo = NULL;
+    pilhaDinamica->tamanho = 0;
+}
+
+bool vaziaDinamica(PilhaDinamica *pilhaDinamica) {
+    return (pilhaDinamica->topo == NULL);
+}
+
+void pushDinamica(Objeto obj, PilhaDinamica *pilhaDinamica) {
+
+    PtrNoPilha aux;
+    aux = (PtrNoPilha) malloc(sizeof (NoPilha));
+    aux->obj = obj;
+    aux->proximo = pilhaDinamica->topo;
+    pilhaDinamica->topo = aux;
+    pilhaDinamica->tamanho++;
+
+}
+
+Objeto popDinamica(PilhaDinamica *pilhaDinamica) {
+
+    if (vaziaDinamica(pilhaDinamica)) {
+        printf("Pilha já vazia");
+        exit(1);
+    } else {
+
+        PtrNoPilha aux;
+
+        aux = pilhaDinamica->topo;
+        pilhaDinamica->topo = pilhaDinamica->topo->proximo;
+        Objeto ret = aux->obj;
+        pilhaDinamica->tamanho--;
+        free(aux);
+
+        return ret;
+    }
+}
+
+void imprimirPilhaDinamica(PilhaDinamica *pilha) {
+
+    PtrNoPilha aux;
+    aux = pilha->topo;
+    printf("---\n");
+
+    while (aux != NULL) {
+        printf("|%i|\n", aux->obj.key);
+        printf("---\n");
+        aux = aux->proximo;
+    }
+
+}
+
+//=================================================================================
+//=================================================================================
+//=================================================================================
+//============================Pilha Estatica=======================================
+//=================================================================================
+//=================================================================================
+//=================================================================================
+
+void iniciaEstatica(PilhaEstatica *pilhaEst) {
+    pilhaEst->topo = 0;
+}
+
+bool cheiaEstatica(PilhaEstatica *pilhaEst) {
+
+    if (pilhaEst->topo == N) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool vaziaEstatica(PilhaEstatica *pilhaEst) {
+
+    if (pilhaEst->topo == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void pushEstatica(Objeto obj, PilhaEstatica *pilhaEst) {
+
+    if (cheiaEstatica(pilhaEst) == false) {
+        pilhaEst->array[pilhaEst->topo].key = obj.key;
+        pilhaEst->topo += 1;
+    } else {
+        printf("Pilha cheia seu otário");
+    }
+}
+
+Objeto popEstatica(PilhaEstatica *pilhaEst) {
+    Objeto obj;
+
+    if (vaziaEstatica(pilhaEst) == false) {
+        obj.key = pilhaEst->array[pilhaEst->topo - 1].key;
+        pilhaEst->topo -= 1;
+
+        return obj;
+    } else {
+        printf("Pilha já vazia seu otário\n");
+    }
+
+}
+
+void imprimirPilhaEstatica(PilhaEstatica *pilha) {
+    printf("---\n");
+    for (int i = pilha->topo - 1; i >= 0; i--) {
+        printf("|%i|\n", pilha->array[i].key);
+        printf("---\n");
+    }
+    printf("\n");
+}
+
+void escolhaEstatica(PilhaEstatica pEntrada, FILE *arqSaida) {
+    Objeto aux;
+    PilhaEstatica pSaida;
+    iniciaEstatica(&pSaida);
+
+    imprimirPilhaEstatica(&pEntrada);
+
+    for (int i = pEntrada.topo - 1; i >= 0; i--) {
+        aux = popEstatica(&pEntrada);
+        aux.key = binario(aux.key);
+        fprintf(arqSaida, "%i\n", aux.key);
+        pushEstatica(aux, &pSaida);
+    }
+
+    imprimirPilhaEstatica(&pSaida);
+
+}
+
+void escolhaDinamica(PilhaEstatica pEntrada, FILE *arqSaida) {
+    Objeto aux;
+    PilhaDinamica pSaida;
+    iniciaDinamica(&pSaida);
+
+    imprimirPilhaEstatica(&pEntrada);
+
+    for (int i = pEntrada.topo - 1; i >= 0; i--) {
+        aux = popEstatica(&pEntrada);
+        aux.key = binario(aux.key);
+        fprintf(arqSaida, "%i\n", aux.key);
+        pushDinamica(aux, &pSaida);
+    }
+
+    imprimirPilhaDinamica(&pSaida);
+
+}
+
+int main(int argc, char** argv) {
+
+    PilhaEstatica pEntrada;
+    iniciaEstatica(&pEntrada);
+    Objeto objAux;
+
+    FILE *arqEntrada = NULL;
+    FILE *arqSaida = NULL;
+
+    arqEntrada = fopen("entrada.txt", "r");
+    arqSaida = fopen("saida.txt", "w");
+
+    if (arqEntrada == NULL || arqSaida == NULL) {
+        printf("Erro ao abrir o arquivo.");
+        exit(1);
+    }
+
+    char verificacao;
+    verificacao = fgetc(arqEntrada);
+
+
+    while (fscanf(arqEntrada, "%i", &objAux.key) != EOF) {
+
+        pushEstatica(objAux, &pEntrada);
+
+        if (pEntrada.topo == N) {
+            printf("Tamanho max de 100 foi atingido, lido até o número: %i.\n", pEntrada.array[pEntrada.topo - 1].key);
+            break;
+        }
+
+    }
+
+    if (verificacao == 'e') {
+        printf("Pilha Estatica.\n");
+        escolhaEstatica(pEntrada, arqSaida);
+
+    } else if (verificacao == 'd') {
+        escolhaDinamica(pEntrada, arqSaida);
+        printf("Pilha Dinamica.\n");
+    } else {
+        printf("Arquivo não especifica tipo da pilha.\n");
+        exit(1);
+    }
+
+    return (EXIT_SUCCESS);
+}
