@@ -1,0 +1,148 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef struct {
+    int key;
+} Objeto;
+
+typedef struct NoPilha *PtrNoPilha;
+
+typedef struct NoPilha {
+    Objeto obj;
+    PtrNoPilha proximo;
+} NoPilha;
+
+typedef struct {
+    PtrNoPilha topo;
+    int tamanho;
+} PilhaDinamica;
+
+void iniciaPilha(PilhaDinamica *pilha) {
+    pilha->tamanho = 0;
+    pilha->topo = NULL;
+}
+
+bool estaVazia(PilhaDinamica *pilha) {
+    if (pilha->topo == NULL) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void push(PilhaDinamica *pilha) {
+
+    Objeto objPilha;
+    PtrNoPilha aux;
+    aux = (PtrNoPilha) malloc(sizeof (NoPilha));
+
+    printf("Qual elemento colocar: ");
+    scanf("%i", &objPilha.key);
+
+    aux->obj = objPilha;
+    aux->proximo = pilha->topo;
+    pilha->topo = aux;
+    pilha->tamanho += 1;
+
+
+    // printf("%i", pilha->topo->obj.key);
+}
+
+Objeto pop(PilhaDinamica *pilha) {
+
+    if (estaVazia(pilha) == 1) {
+        printf("Pilha vazia.\n");
+    } else {
+
+        PtrNoPilha aux;
+
+        aux = pilha->topo;
+        pilha->topo = pilha->topo->proximo;
+
+        Objeto ret = aux->obj;
+
+        pilha->tamanho--;
+
+        free(aux);
+        return (ret);
+    }
+}
+
+void imprimirPilha(PilhaDinamica *pilha) {
+
+    PtrNoPilha aux;
+    aux = pilha->topo;
+
+    printf(" ~ \n");
+
+    while (aux != NULL) {
+
+        printf("|%i|\n", aux->obj.key);
+        aux = aux->proximo;
+
+    }
+    printf(" ~ \n");
+
+
+}
+
+int main(int argc, char** argv) {
+
+    PilhaDinamica pilha;
+
+    int escolha = 0;
+
+    do {
+        printf("[1] - Inicia pilha\n"
+                "[2] - Está vazia\n"
+                "[3] - Push\n"
+                "[4] - Pop\n"
+                "[5] - Size\n"
+                "[6] - Top\n");
+        scanf("%i", &escolha);
+
+        switch (escolha) {
+            case 1:
+                system("clear");
+                iniciaPilha(&pilha);
+                printf("Pilha iniciada.\n");
+                break;
+            case 2:
+                system("clear");
+                if (estaVazia(&pilha) == 1) {
+                    printf("Pilha vazia.\n");
+                } else {
+                    printf("Há conteúdo na pilha.\n");
+                }
+                break;
+            case 3:
+
+                push(&pilha);
+                system("clear");
+                imprimirPilha(&pilha);
+
+                break;
+            case 4:
+                pop(&pilha);
+                system("clear");
+                imprimirPilha(&pilha);
+
+                break;
+            case 5:
+                system("clear");
+                //          size(&pilha);
+                imprimirPilha(&pilha);
+
+                break;
+            case 6:
+                //             objetoPilha = top(&pilha);
+                imprimirPilha(&pilha);
+                break;
+        }
+    } while (1);
+
+
+    return (EXIT_SUCCESS);
+}
+
