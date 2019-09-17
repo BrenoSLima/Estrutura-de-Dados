@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef struct{
+    int key;
+}Objeto;
+
+typedef struct NoLista *PtrNoLista;
+
+typedef struct NoLista{
+    Objeto obj;
+    PtrNoLista prox;
+}NoLista;
+
+typedef struct{
+    int tamanho;
+    PtrNoLista comeco;
+}Lista;
+
+void iniciaLista(Lista *lista){
+    lista->comeco = NULL;
+    lista->tamanho = 0;
+}
+
+int tamanho(Lista *lista){
+    return(lista->tamanho==0);
+}
+
+bool estaVazia(Lista *lista){
+    return(lista->tamanho == 0);
+}
+
+void insercao(Lista *lista, Objeto obj){
+    
+    PtrNoLista novo;
+    novo = (PtrNoLista)malloc(sizeof(NoLista));
+    
+    novo->obj = obj;
+    
+    if(!estaVazia == 1){
+    
+        novo->prox = lista->comeco;
+        lista->comeco = novo;
+    
+    }else{
+        
+        PtrNoLista aux;
+        aux = lista->comeco;
+        
+        while(aux->prox != NULL && obj.key > aux->prox->obj.key){
+            aux = aux->prox;
+        }
+        
+        novo->prox = aux->prox;
+        aux->prox = novo;
+        
+        lista->tamanho += 1;
+        
+        
+    }
+    
+}
+
+void insercao(Lista lista, Objeto obj){
+    
+    PtrNoLista novo;
+    novo = (PtrNoLista)malloc(sizeof(NoLista));
+    
+    if(!estaVazia == 1){
+        
+        novo->prox = lista.comeco;
+        lista.comeco = novo;
+        
+    }else{
+        
+        PtrNoLista aux;
+        
+        aux = lista.comeco;
+        
+        while(aux->prox != NULL && obj.key < aux->prox->obj.key){
+            aux = aux->prox;
+        }
+        
+        novo->prox = aux->prox;
+        aux->prox= novo;
+        
+    }
+    
+    
+}
+
+int main(int argc, char** argv) {
+
+    Lista lista;
+    
+    
+    
+    
+    
+    return (EXIT_SUCCESS);
+}
+
