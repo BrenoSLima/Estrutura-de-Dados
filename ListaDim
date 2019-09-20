@@ -2,102 +2,195 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct{
+typedef struct {
     int key;
-}Objeto;
+} Objeto;
 
 typedef struct NoLista *PtrNoLista;
 
-typedef struct NoLista{
+typedef struct NoLista {
     Objeto obj;
     PtrNoLista prox;
-}NoLista;
+} NoLista;
 
-typedef struct{
+typedef struct {
     int tamanho;
     PtrNoLista comeco;
-}Lista;
+} Lista;
 
-void iniciaLista(Lista *lista){
+void iniciaLista(Lista *lista) {
     lista->comeco = NULL;
     lista->tamanho = 0;
 }
 
-int tamanho(Lista *lista){
-    return(lista->tamanho==0);
+int tamanho(Lista *lista) {
+    return (lista->tamanho == 0);
 }
 
-bool estaVazia(Lista *lista){
-    return(lista->tamanho == 0);
+bool estaVazia(Lista *lista) {
+    return (lista->tamanho == 0);
 }
 
-void insercao(Lista *lista, Objeto obj){
-    
+void insercao(Lista *lista, Objeto obj) {
+
+    printf("Elemento colocar: ");
+    scanf("%i", &obj.key);
+
     PtrNoLista novo;
-    novo = (PtrNoLista)malloc(sizeof(NoLista));
-    
-    novo->obj = obj;
-    
-    if(!estaVazia == 1){
-    
+    novo = (PtrNoLista) malloc(sizeof (NoLista));
+
+    novo->obj.key = obj.key;
+    if (lista->comeco == NULL || obj.key < lista->comeco->obj.key) {
         novo->prox = lista->comeco;
         lista->comeco = novo;
-    
-    }else{
-        
+
+    } else {
+
         PtrNoLista aux;
+
         aux = lista->comeco;
-        
-        while(aux->prox != NULL && obj.key > aux->prox->obj.key){
+
+        while (aux->prox != NULL && obj.key > aux->prox->obj.key) {
             aux = aux->prox;
         }
-        
+
         novo->prox = aux->prox;
         aux->prox = novo;
-        
-        lista->tamanho += 1;
-        
-        
+
     }
-    
+
+
 }
 
-void insercao(Lista lista, Objeto obj){
+PtrNoLista pesquisa(Lista *lista, Objeto obj) {
+
+    printf("Pesquisar: ");
+    scanf("%i", &obj.key);
     
-    PtrNoLista novo;
-    novo = (PtrNoLista)malloc(sizeof(NoLista));
-    
-    if(!estaVazia == 1){
-        
-        novo->prox = lista.comeco;
-        lista.comeco = novo;
-        
-    }else{
-        
-        PtrNoLista aux;
-        
-        aux = lista.comeco;
-        
-        while(aux->prox != NULL && obj.key < aux->prox->obj.key){
-            aux = aux->prox;
-        }
-        
-        novo->prox = aux->prox;
-        aux->prox= novo;
-        
+    if (estaVazia(lista)) {
+        return NULL;
     }
-    
-    
+
+    PtrNoLista aux;
+    aux = lista->comeco;
+
+    while (aux != NULL && obj.key > aux->obj.key) {
+        aux = aux->prox;
+    }
+    if (aux == NULL || aux->obj.key < obj.key) {
+        return NULL;
+    } else {
+        printf("Achado");
+        printf("%i", aux->obj.key);
+        return aux;
+    }
+
+}
+
+Objeto remocao(Lista *lista, Objeto obj) {
+
+    printf("Elemento remover: ");
+    scanf("%i", &obj.key);
+
+    Objeto ret;
+
+    if (lista->comeco == NULL || obj.key < lista->comeco->obj.key) {
+        return ret;
+    }
+
+    PtrNoLista aux;
+
+    if (lista->comeco->obj.key == obj.key) {
+        aux = lista->comeco;
+        ret = aux->obj;
+        lista->comeco = lista->comeco->prox;
+        lista->tamanho -= 1;
+        free(aux);
+        return ret;
+    }
+
+    aux = pesquisa(lista, obj);
+    if (aux != NULL) {
+        ret = aux->obj;
+        aux = aux->prox;
+
+        lista->tamanho -= 1;
+        free(aux);
+        return ret;
+
+    } else {
+        printf("Não tá na lista seu otário\n");
+        return ret;
+    }
+
+}
+
+void imprimirLista(Lista *lista) {
+
+    PtrNoLista aux;
+    aux = lista->comeco;
+
+    while (aux != NULL) {
+        printf("%i ", aux->obj.key);
+        aux = aux->prox;
+    }
+    printf("\n");
 }
 
 int main(int argc, char** argv) {
 
+    int escolha = 0;
+
     Lista lista;
-    
-    
-    
-    
-    
-    return (EXIT_SUCCESS);
+    Objeto obj;
+
+
+    do {
+        printf("[1] - Inicia Lista\n"
+                "[2] - Está vazia\n"
+                "[3] - Enqueue\n"
+                "[4] - Dequeue\n"
+                "[5] - Search\n");
+        scanf("%i", &escolha);
+
+        switch (escolha) {
+            case 1:
+                iniciaLista(&lista);
+                system("clear");
+                printf("Lista Iniciada\n");
+                break;
+            case 2:
+                system("clear");
+                if (estaVazia(&lista) == 1) {
+                    printf("Pilha vazia.\n");
+                } else {
+                    printf("Há conteúdo na pilha.\n");
+                }
+                break;
+            case 3:
+
+                insercao(&lista, obj);
+                system("clear");
+                imprimirLista(&lista);
+
+                break;
+            case 4:
+                remocao(&lista, obj);
+                system("clear");
+                imprimirLista(&lista);
+
+                break;
+            case 5:
+                pesquisa(&lista, obj);
+                
+                //imprimirLista(&lista);
+
+                break;
+
+        }
+    } while (1);
+
+
+    return 0;
 }
 
