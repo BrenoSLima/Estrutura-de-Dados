@@ -44,27 +44,45 @@ int insereElemento(Lista *l, int chave) {
     novo = (PtrNoLista) malloc(sizeof (NoLista));
     novo->obj.key = chave;
 
-    if (l->inicio == NULL || chave < l->inicio->obj.key) {
-
-        novo->prox = l->inicio;
+    if (l->inicio == NULL) {
+        
+        novo->prox = NULL;
         novo->ante = NULL;
         l->inicio = novo;
         l->tamanho += 1;
         return chave;
+
     }
 
-    PtrNoLista aux;
+    else if (chave < l->inicio->obj.key) {
 
-    aux = l->inicio;
+        novo->prox = l->inicio;
+        l->inicio->ante = novo;
+        novo->ante = NULL;
+        l->inicio = novo;
+        l->tamanho += 1;
+        return chave;
 
-    while (aux->prox != NULL && chave > aux->prox->obj.key) {
-        aux = aux->prox;
     }
 
-    novo->prox = aux->prox;
-    aux->prox = novo;
-    novo->ante = aux;
-    l->tamanho += 1;
+    else {
+
+        PtrNoLista aux;
+
+        aux = l->inicio;
+
+        while (aux->prox != NULL && chave > aux->prox->obj.key) {
+            aux = aux->prox;
+        }
+
+        novo->prox = aux->prox;
+        novo->ante = aux;
+        aux->prox->ante = novo;
+        aux->prox = novo;
+        l->tamanho += 1;
+        return chave;
+        
+    }
 }
 
 void criaLista(Lista *l, FILE *arqEntrada, FILE *arqSaida) {
@@ -100,8 +118,8 @@ int main(int argc, char** argv) {
     }
 
     char verificacao;
-    verificacao = fgetc(arqEntrada);
 
+    verificacao = fgetc(arqEntrada);
     criaLista(&l, arqEntrada, arqSaida);
 
     if (verificacao == 'c') {
@@ -118,22 +136,22 @@ int main(int argc, char** argv) {
         }
         fprintf(arqSaida, "%i}", aux->obj.key);
 
-        
+
     } else if (verificacao == 'd') {
 
         aux = l.inicio;
 
-        while(aux->prox != NULL){
+        while (aux->prox != NULL) {
             aux = aux->prox;
         }
-        
+
         fprintf(arqSaida, "Tamanho = %i\n", l.tamanho);
 
         fprintf(arqSaida, "Lista = {");
-        
+
         while (aux->ante != NULL) {
             fprintf(arqSaida, "%i,", aux->obj.key);
-            printf("%i ", aux->obj.key);    
+            printf("%i ", aux->obj.key);
             aux = aux->ante;
         }
         fprintf(arqSaida, "%i}", aux->obj.key);
@@ -147,4 +165,3 @@ int main(int argc, char** argv) {
 
     return (EXIT_SUCCESS);
 }
-
