@@ -22,24 +22,24 @@ bool estaVazia(PtrNoArvore *arvore) {
     return (*arvore == NULL);
 }
 
-bool insercao(PtrNoArvore *arvore, Objeto obj) {
+bool insercao(PtrNoArvore *arvore, int x) {
 
     if ((*arvore) == NULL) {
-        *arvore = malloc(sizeof (NoArvore));
-        (*arvore)->esquerda = (*arvore)->esquerda = NULL;
-        (*arvore)->obj = obj;
+        *arvore = malloc(sizeof(NoArvore));
+        (*arvore)->esquerda = (*arvore)->direita = NULL;
+        (*arvore)->obj.chave = x;
         return true;
     }
 
-    if ((*arvore)->obj.chave == obj.chave) {
+    if ((*arvore)->obj.chave == x) {
         printf("Chave duplicada, não inserindo...");
         return false;
     }
 
-    if ((*arvore)->obj.chave > obj.chave) {
-        return (insercao(&(*arvore)->esquerda, obj));
-    } else if ((*arvore)->obj.chave < obj.chave) {
-        return (insercao(&(*arvore)->direita, obj));
+    if ((*arvore)->obj.chave > x) {
+        return (insercao(&(*arvore)->esquerda, x));
+    } else if ((*arvore)->obj.chave < x) {
+        return (insercao(&(*arvore)->direita, x));
     }
 
 }
@@ -57,21 +57,25 @@ bool pesquisa(PtrNoArvore *arvore, int x) {
 }
 
 void preOrdem(PtrNoArvore *arvore) {
-    printf("%i", (*arvore)->obj.chave);
+    if((*arvore)==NULL)return;
+    printf("%i ", (*arvore)->obj.chave);
     preOrdem(&(*arvore)->esquerda);
     preOrdem(&(*arvore)->direita);
 }
 
-void proOrdem(PtrNoArvore *arvore) {
+void posOrdem(PtrNoArvore *arvore) {
+    if((*arvore)==NULL)return;
     preOrdem(&(*arvore)->esquerda);
     preOrdem(&(*arvore)->direita);
-    printf("%i", (*arvore)->obj.chave);
+    printf("%i ", (*arvore)->obj.chave);
 }
 
 void ordem(PtrNoArvore *arvore) {
+    if((*arvore)==NULL)return;
     preOrdem(&(*arvore)->esquerda);
+    printf("%i ", (*arvore)->obj.chave);
     preOrdem(&(*arvore)->direita);
-    printf("%i", (*arvore)->obj.chave);
+
 }
 
 bool maiorRecursivo(PtrNoArvore *arvore) {
@@ -98,9 +102,9 @@ PtrNoArvore esqmax(PtrNoArvore *node) {
 PtrNoArvore dirmin(PtrNoArvore *node) {
 
     PtrNoArvore ret;
-    if ((*node)->direita == NULL) {
+    if ((*node)->esquerda == NULL) {
         ret = (*node);
-        (*node) = (*node)->direita;
+        (*node) = (*node)->esquerda;
         return ret;
     }
 
@@ -113,27 +117,22 @@ bool remocao(PtrNoArvore *node, int x) {
     if ((*node) == NULL) {
         return false;
     }
-    
+
     PtrNoArvore tmp = (*node);
-    
-    if (x == (*node)->obj.chave) {
-    
+
+    if ((*node)->obj.chave == x) {
+
         if ((*node)->esquerda == NULL) {
             (*node) = (*node)->direita;
-        }
-
-        else if ((*node)->direita == NULL) {
+        } else if ((*node)->direita == NULL) {
             (*node) = (*node)->esquerda;
-        }
-
-        else if ((*node)->esquerda != NULL && (*node)->direita != NULL) {                            //Verificação de nó interno
+        } else if ((*node)->esquerda != NULL && (*node)->direita != NULL) { //Verificação de nó interno
             tmp = esqmax(&((*node)->esquerda));
+            //tmp = dirmin(&((*node)->esquerda));
             (*node)->obj = tmp->obj;
-            
         }
         free(tmp);
         return true;
-
     }
 
     if (x > (*node)->obj.chave) {
@@ -145,9 +144,47 @@ bool remocao(PtrNoArvore *node, int x) {
 
 int main(int argc, char** argv) {
 
-
+    int escolha, elemento;
     PtrNoArvore raiz;
+    Objeto obj;
+    
+    
+    iniciaArvore(&raiz);
+    insercao(&raiz, 10);
+    insercao(&raiz, 5);
+    insercao(&raiz, 15);
+    insercao(&raiz, 3);
+    insercao(&raiz, 7);
+    insercao(&raiz, 13);
+    insercao(&raiz, 18);
+    
+    do {
+        printf( "\n[1] - Pré-ordem\n"
+                "[2] - Pós-ordem\n"
+                "[3] - Ordem\n"
+                "[4] - Excluir\n");
+        scanf("%i", &escolha);
 
+        switch (escolha) {
+            case 1:
+                system("clear");
+                preOrdem(&raiz);
+                break;
+            case 2:
+                system("clear");
+                posOrdem(&raiz);
+                break;
+            case 3:
+                system("clear");
+                ordem(&raiz);
+                break;
+            case 4:
+                system("clear");
+                printf("Elemento: ");
+                scanf("%i", &elemento);
+                remocao(&raiz, elemento);
+        }
+    } while (1);
 
     return (EXIT_SUCCESS);
 }
