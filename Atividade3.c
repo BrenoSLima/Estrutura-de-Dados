@@ -47,7 +47,6 @@ void iniciaFila(fila *f) {
     f->comeco = NULL;
     f->final = NULL;
     f->tamanho = 0;
-    printf("Fila iniciada\n");
 }
 
 void iniciaArvore(ptrNoArvore *arvore) {
@@ -228,7 +227,7 @@ int main(int argc, char** argv) {
     while (palavra != NULL) {
         insereArvore(&raiz, palavra);
         printf("%s ", palavra);
-        strtok(NULL, " <:,>");
+        palavra = strtok(NULL, " <:,>");
     }
 
     //=====================================================================================================================
