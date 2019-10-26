@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 //=====================================================================================================================
 //=====================================================================================================================
@@ -76,6 +77,7 @@ bool insereArvore(ptrNoArvore *arvore, char *palavra) {
         (*arvore)->esquerda = NULL;
         (*arvore)->direita = NULL;
         iniciaFila(&(*arvore)->objArvore.f);
+        
         strcpy((*arvore)->objArvore.palavra, palavra);
         return true;
     }
@@ -100,7 +102,6 @@ bool insereArvore(ptrNoArvore *arvore, char *palavra) {
 void preOrdem(ptrNoArvore *arvore) {
     if ((*arvore) == NULL)return;
     printf("%s ", (*arvore)->objArvore.palavra);
-    //printf(" 1 ");
     preOrdem(&(*arvore)->esquerda);
     preOrdem(&(*arvore)->direita);
 }
@@ -110,14 +111,12 @@ void posOrdem(ptrNoArvore *arvore) {
     posOrdem(&(*arvore)->esquerda);
     posOrdem(&(*arvore)->direita);
     printf("%s ", (*arvore)->objArvore.palavra);
-    //printf(" 1 ");
 }
 
 void ordem(ptrNoArvore *arvore) {
     if ((*arvore) == NULL)return;
     ordem(&(*arvore)->esquerda);
     printf("%s ", (*arvore)->objArvore.palavra);
-    //printf(" 1 ");
     ordem(&(*arvore)->direita);
 
 }
@@ -130,6 +129,7 @@ void insereFila(fila *f, int x) {
 
     ptrNoFila novo;
     novo = (ptrNoFila) malloc(sizeof (fila));
+    novo->objFila.nrmPagina = x;
 
     if (f->comeco == NULL) {
         f->comeco = novo;
@@ -140,20 +140,17 @@ void insereFila(fila *f, int x) {
         f->final = f->final->prox;
         novo->prox = NULL;
     }
-
+    printf("Número de página inserir: %i\n", x);
 }
 
 //=====================================================================================================================
 
 void printFila(fila *f) {
     ptrNoFila aux;
-    printf("CCCCCC");
     aux = f->comeco;
 
-    while (aux->prox != NULL) {
-        printf(" AAAAAAA ");
+    while (aux != NULL) {
         printf("%i, ", aux->objFila.nrmPagina);
-        printf(" BBBBBBB ");
         aux = aux->prox;
     }
 }
@@ -168,8 +165,15 @@ bool pesquisaPalavra(ptrNoArvore *arvore, char *palavra, int pagina) {
         return false;
     }
 
-    if (strcmp(palavra, (*arvore)->objArvore.palavra) == 0) {
+    //if(pagina == (*arvore)->objArvore.f.final->objFila.nrmPagina){
+    //  printf("Repetido\n");
+    //}
+
+    if (strcmp(palavra, (*arvore)->objArvore.palavra) == 0 && toupper(palavra[0]) == toupper((*arvore)->objArvore.palavra[0])) {
+        //if(strcmp(palavra, "chave") == 0)printf("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\n");
+        //if(strcmp(palavra, "arvore") == 0)printf("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\n");
         insereFila(&(*arvore)->objArvore.f, pagina);
+        printf("Tentado inserir: %s\n", palavra);
         return true;
     }
     if (strcmp(palavra, (*arvore)->objArvore.palavra) < 0) {
@@ -191,8 +195,8 @@ void printar(ptrNoArvore *arvore) {
     if ((*arvore) == NULL)return;
     printar(&(*arvore)->esquerda);
     printf("%s ", (*arvore)->objArvore.palavra);
-    printf("\n");
     printFila(&(*arvore)->objArvore.f);
+    printf("\n");
     printar(&(*arvore)->direita);
 
 }
@@ -221,20 +225,21 @@ int main(int argc, char** argv) {
     char str[181], *palavra;
     fgets(str, 181, arqEntrada);
 
-    palavra = strtok(str, " <:,>");
-    palavra = strtok(NULL, " <:,>");
+    palavra = strtok(str, " <:,>\n");
+    palavra = strtok(NULL, " <:,>\n");
 
     while (palavra != NULL) {
+        printf("|%s| \n", palavra);
         insereArvore(&raiz, palavra);
-        printf("%s ", palavra);
-        palavra = strtok(NULL, " <:,>");
+        palavra = strtok(NULL, " <:,>\n");
+
     }
 
     //=====================================================================================================================
     //=====================================================================================================================
     //=====================================================================================================================
 
-    printf("\npreOrdem:\n");
+    printf("\n\npreOrdem:\n");
     preOrdem(&raiz);
     printf("\n\n==========\n");
     printf("\nposOrdem:\n");
@@ -250,7 +255,7 @@ int main(int argc, char** argv) {
 
 
     while (fgets(str, 181, arqEntrada) != NULL) {
-        
+
         if (str[strcspn(str, ">")] == '>' && str[strcspn(str, "<")] == '<') {
             pagina += 1;
             printf("\n\nPágina: %i\n\n", pagina);
@@ -259,8 +264,9 @@ int main(int argc, char** argv) {
 
         palavra = strtok(str, " (),:.<>\n");
         while (palavra != NULL) {
-            pesquisaPalavra(&raiz, palavra, pagina);
             printf("| %s |\n", palavra);
+            printf("%i\n", toupper(palavra[0]));
+            pesquisaPalavra(&raiz, palavra, pagina);
             palavra = strtok(NULL, " (),:.<>\n");
         }
 
