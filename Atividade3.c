@@ -77,7 +77,7 @@ bool insereArvore(ptrNoArvore *arvore, char *palavra) {
         (*arvore)->esquerda = NULL;
         (*arvore)->direita = NULL;
         iniciaFila(&(*arvore)->objArvore.f);
-        
+
         strcpy((*arvore)->objArvore.palavra, palavra);
         return true;
     }
@@ -136,6 +136,7 @@ void insereFila(fila *f, int x) {
         f->final = novo;
         novo->prox = NULL;
     } else {
+        if(f->final->objFila.nrmPagina == x)return;
         f->final->prox = novo;
         f->final = f->final->prox;
         novo->prox = NULL;
@@ -169,7 +170,7 @@ bool pesquisaPalavra(ptrNoArvore *arvore, char *palavra, int pagina) {
     //  printf("Repetido\n");
     //}
 
-    if (strcmp(palavra, (*arvore)->objArvore.palavra) == 0 && toupper(palavra[0]) == toupper((*arvore)->objArvore.palavra[0])) {
+    if (strcmp(palavra, (*arvore)->objArvore.palavra) == 0 || (strcmp(palavra, (*arvore)->objArvore.palavra) == 0 || toupper(palavra[0] == toupper((*arvore)->objArvore.palavra[0])))) {
         //if(strcmp(palavra, "chave") == 0)printf("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\n");
         //if(strcmp(palavra, "arvore") == 0)printf("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\n");
         insereFila(&(*arvore)->objArvore.f, pagina);
@@ -181,7 +182,7 @@ bool pesquisaPalavra(ptrNoArvore *arvore, char *palavra, int pagina) {
     }
 
     if (strcmp(palavra, (*arvore)->objArvore.palavra) > 0) {
-        pesquisaPalavra(&(*arvore)->esquerda, palavra, pagina);
+        pesquisaPalavra(&(*arvore)->direita, palavra, pagina);
     }
 
 }
@@ -190,14 +191,24 @@ bool pesquisaPalavra(ptrNoArvore *arvore, char *palavra, int pagina) {
 //=====================================================================================================================
 //=====================================================================================================================
 
-void printar(ptrNoArvore *arvore) {
-
+void printar(ptrNoArvore *arvore, FILE *arqSaida) {
     if ((*arvore) == NULL)return;
-    printar(&(*arvore)->esquerda);
-    printf("%s ", (*arvore)->objArvore.palavra);
-    printFila(&(*arvore)->objArvore.f);
+    printar(&(*arvore)->esquerda, arqSaida);
+
+    ptrNoFila aux;
+    aux = (*arvore)->objArvore.f.comeco;
     printf("\n");
-    printar(&(*arvore)->direita);
+    printf("%s: ", (*arvore)->objArvore.palavra);
+    fprintf(arqSaida ,"%s: ", (*arvore)->objArvore.palavra);
+    //fprintf(arqSaida, "%s: ", (*arvore)->objArvore.palavra);
+    while (aux != NULL) {
+        printf("%i ", aux->objFila.nrmPagina);
+        fprintf(arqSaida ,"%i ", aux->objFila.nrmPagina);
+        aux = aux->prox;
+    }
+    printf("\n");
+    fprintf(arqSaida ,"\n");
+    printar(&(*arvore)->direita, arqSaida);
 
 }
 
@@ -207,11 +218,15 @@ int main(int argc, char** argv) {
     //=================================PEGANDO TERMOS PARA CRIAÇÃO DA ÁRVORE BINÁRIA=======================================
     //=====================================================================================================================
 
+    if(argc != 3){
+        exit(1);
+    }
+    
     FILE *arqEntrada = NULL;
     FILE *arqSaida = NULL;
 
-    arqEntrada = fopen("entrada.txt", "r");
-    arqSaida = fopen("saida.txt", "w");
+    arqEntrada = fopen(argv[1], "r");
+    arqSaida = fopen(argv[2], "w");
 
     if (arqEntrada == NULL || arqSaida == NULL) {
         printf("Erro ao abrir o arquivo.");
@@ -256,26 +271,21 @@ int main(int argc, char** argv) {
 
     while (fgets(str, 181, arqEntrada) != NULL) {
 
-        if (str[strcspn(str, ">")] == '>' && str[strcspn(str, "<")] == '<') {
-            pagina += 1;
-            printf("\n\nPágina: %i\n\n", pagina);
-            continue;
-        }
-
         palavra = strtok(str, " (),:.<>\n");
         while (palavra != NULL) {
+            if (strcmp(palavra, "page") == 0) {
+                pagina += 1;
+            }
             printf("| %s |\n", palavra);
-            printf("%i\n", toupper(palavra[0]));
             pesquisaPalavra(&raiz, palavra, pagina);
             palavra = strtok(NULL, " (),:.<>\n");
         }
 
     }
 
-    printar(&raiz);
+    printar(&raiz, arqSaida);
 
     free(raiz);
 
     return (EXIT_SUCCESS);
 }
-
