@@ -1,0 +1,205 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef struct {
+    int key;
+} Objeto;
+
+typedef struct NoArvAVL *PtrNoArvAVL;
+
+typedef struct NoArvAVL {
+    PtrNoArvAVL esquerda;
+    PtrNoArvAVL direita;
+    Objeto obj;
+    int balance;
+    int altura;
+} NoArvAVL;
+
+void iniciaArvore(PtrNoArvAVL *arv) {
+    (*arv) = NULL;
+}
+
+int alturaArv(PtrNoArvAVL *arvore) {
+
+    if ((*arvore) == NULL)return 0;
+
+    int alturaE;
+    int alturaD;
+
+    alturaE = alturaArv(&(*arvore)->esquerda);
+    alturaD = alturaArv(&(*arvore)->direita);
+
+    if (alturaE > alturaD) {
+        return (alturaE + 1);
+    } else {
+        return (alturaD + 1);
+    }
+
+}
+
+void rotSingEsq(PtrNoArvAVL *p) {
+
+    PtrNoArvAVL u;
+    u = (*p)->direita;
+    (*p)->direita = u->esquerda;
+    u->esquerda = (*p);
+    (*p)->altura = 0;
+    (*p)->balance = 0;
+    (*p) = u;
+
+}
+
+void rotSingDir(PtrNoArvAVL *p) {
+
+    PtrNoArvAVL u;
+    u = (*p)->esquerda;
+    (*p)->esquerda = u->direita;
+    u->direita = (*p);
+    (*p)->balance = 0;
+    (*p) = u;
+
+}
+
+void rotDoubEsq(PtrNoArvAVL *p) {
+
+    PtrNoArvAVL u;
+    PtrNoArvAVL v;
+
+    u = (*p)->direita;
+    v = u->esquerda;
+    (*p)->direita = v->esquerda;
+    u->esquerda = v->direita;
+    v->direita = u;
+    v->esquerda = (*p);
+    (*p) = v;
+
+}
+
+void rotDoubDir(PtrNoArvAVL *p) {
+
+    PtrNoArvAVL u;
+    PtrNoArvAVL v;
+
+    u = (*p)->esquerda;
+    v = u->direita;
+    (*p)->esquerda = v->direita;
+    u->direita = v->esquerda;
+    v->direita = (*p);
+    v->esquerda = u;
+    (*p) = v;
+
+}
+
+void rotacao(PtrNoArvAVL *p) {
+
+    PtrNoArvAVL U, V;
+    U = (*p)->esquerda;
+    V = (*p)->direita;
+
+    printf("\nFator Balanceamento: %i\n", alturaArv(&(*p)->direita) - alturaArv(&(*p)->esquerda));
+
+
+    int alturaE = alturaArv(&(*p)->esquerda);
+    int alturaD = alturaArv(&(*p)->direita);
+    
+    int alturaEu = alturaArv(&(*p)->esquerda->esquerda);
+    int alturaDu = alturaArv(&(*p)->esquerda->direita);
+    
+    int alturaEv = alturaArv(&(*p)->direita->esquerda);
+    int alturaDv = alturaArv(&(*p)->direita->direita);
+    
+
+
+//    if (alturaD - alturaE < -1 && alturaEu > alturaDu) {
+//        printf("Rotação singular direita");
+//        //rotSingDir(p);
+//
+//    } else if (alturaD - alturaE < -1 && alturaEu < alturaDu) {
+//        printf("Rotação dupla direita");
+//        //rotDoubDir(p);
+//    }
+//
+//    if (alturaD - alturaE > 1 && alturaEv < alturaDv) {
+//        printf("Rotação singular esquerda");
+//        //rotSingEsq(p);
+//    } 
+//    else if (alturaD - alturaE > 1 && alturaEv > alturaDv) {
+//        printf("Rotação dupla esquerda");
+//        //rotDoubEsq(p);
+//    }
+
+}
+
+bool insercaoAVL(PtrNoArvAVL *arvoreAVL, int x) {
+
+    if ((*arvoreAVL) == NULL) {
+        (*arvoreAVL) = malloc(sizeof (NoArvAVL));
+        (*arvoreAVL)->obj.key = x;
+        (*arvoreAVL)->altura = 1;
+        (*arvoreAVL)->direita = NULL;
+        (*arvoreAVL)->esquerda = NULL;
+        (*arvoreAVL)->balance = 0;
+        return true;
+    }
+
+    if ((*arvoreAVL)->obj.key == x) {
+        return false;
+    }
+
+    printf("UM \n");
+    bool check;
+    if (x < (*arvoreAVL)->obj.key) {
+        check = insercaoAVL(&(*arvoreAVL)->esquerda, x);
+    } else {
+        check = insercaoAVL(&(*arvoreAVL)->direita, x);
+    }
+
+    //if (check == false)return false;
+
+    printf("TRES\n");
+
+    int alturaE, alturaD;
+
+    alturaE = alturaArv(&(*arvoreAVL)->esquerda);
+    alturaD = alturaArv(&(*arvoreAVL)->direita);
+
+    (*arvoreAVL)->balance = alturaD - alturaE;
+    printf("\nElemento Analisado: %i\n", (*arvoreAVL)->obj.key);
+    printf("Balanço: %i\n", (*arvoreAVL)->balance);
+
+    if ((*arvoreAVL)->balance < -1 || (*arvoreAVL)->balance > 1) {
+        printf("BALANCEAR\n");
+        rotacao(&(*arvoreAVL));
+    }
+
+}
+
+void preOrdem(PtrNoArvAVL *arvore) {
+    if ((*arvore) == NULL)return;
+    printf("%i ", (*arvore)->obj.key);
+    preOrdem(&(*arvore)->esquerda);
+    preOrdem(&(*arvore)->direita);
+}
+
+int main(int argc, char** argv) {
+
+    int escolha;
+    int x;
+    PtrNoArvAVL raiz;
+    iniciaArvore(&raiz);
+
+
+    do {
+        printf("Elemento: ");
+        scanf("%i", &x);
+        insercaoAVL(&raiz, x);
+        //system("clear");
+        printf("Arvore: ");
+        preOrdem(&raiz);
+        printf("\n");
+    } while (1);
+
+
+    return (EXIT_SUCCESS);
+}
