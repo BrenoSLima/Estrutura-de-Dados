@@ -99,36 +99,39 @@ void rotacao(PtrNoArvAVL *p) {
 
     printf("\nFator Balanceamento: %i\n", alturaArv(&(*p)->direita) - alturaArv(&(*p)->esquerda));
 
-
     int alturaE = alturaArv(&(*p)->esquerda);
     int alturaD = alturaArv(&(*p)->direita);
-    
-    int alturaEu = alturaArv(&(*p)->esquerda->esquerda);
-    int alturaDu = alturaArv(&(*p)->esquerda->direita);
-    
-    int alturaEv = alturaArv(&(*p)->direita->esquerda);
-    int alturaDv = alturaArv(&(*p)->direita->direita);
-    
 
+    int alturaEu;
+    int alturaDu;
 
-//    if (alturaD - alturaE < -1 && alturaEu > alturaDu) {
-//        printf("Rotação singular direita");
-//        //rotSingDir(p);
-//
-//    } else if (alturaD - alturaE < -1 && alturaEu < alturaDu) {
-//        printf("Rotação dupla direita");
-//        //rotDoubDir(p);
-//    }
-//
-//    if (alturaD - alturaE > 1 && alturaEv < alturaDv) {
-//        printf("Rotação singular esquerda");
-//        //rotSingEsq(p);
-//    } 
-//    else if (alturaD - alturaE > 1 && alturaEv > alturaDv) {
-//        printf("Rotação dupla esquerda");
-//        //rotDoubEsq(p);
-//    }
+    int alturaEv;
+    int alturaDv;
 
+    if (alturaD - alturaE < -1) {
+
+        alturaEu = alturaArv(&(*p)->esquerda->esquerda);
+        alturaDu = alturaArv(&(*p)->esquerda->direita);
+
+        if (alturaEu > alturaDu) {
+            printf("Rotação singular direita\n");
+            rotSingDir(p);
+
+        } else if (alturaEu < alturaDu) {
+            printf("Rotação dupla direita\n");
+            rotDoubDir(p);
+        }
+    }
+
+    if (alturaD - alturaE > 1) {
+        if (alturaEv < alturaDv) {
+            printf("Rotação singular esquerda");
+            rotSingEsq(p);
+        } else if (alturaEv > alturaDv) {
+            printf("Rotação dupla esquerda");
+            rotDoubEsq(p);
+        }
+    }
 }
 
 bool insercaoAVL(PtrNoArvAVL *arvoreAVL, int x) {
@@ -147,7 +150,6 @@ bool insercaoAVL(PtrNoArvAVL *arvoreAVL, int x) {
         return false;
     }
 
-    printf("UM \n");
     bool check;
     if (x < (*arvoreAVL)->obj.key) {
         check = insercaoAVL(&(*arvoreAVL)->esquerda, x);
@@ -156,8 +158,6 @@ bool insercaoAVL(PtrNoArvAVL *arvoreAVL, int x) {
     }
 
     //if (check == false)return false;
-
-    printf("TRES\n");
 
     int alturaE, alturaD;
 
@@ -172,6 +172,28 @@ bool insercaoAVL(PtrNoArvAVL *arvoreAVL, int x) {
         printf("BALANCEAR\n");
         rotacao(&(*arvoreAVL));
     }
+
+}
+
+void remover(PtrNoArvAVL *arvoreAVL, int x) {
+
+
+    if ((*arvoreAVL) == NULL) {
+        printf("Elemento não encontrado");
+        return;
+    }
+
+    if ((*arvoreAVL)->obj.key == x) {
+       
+    }
+
+    bool check;
+    if (x < (*arvoreAVL)->obj.key) {
+        check = insercaoAVL(&(*arvoreAVL)->esquerda, x);
+    } else {
+        check = insercaoAVL(&(*arvoreAVL)->direita, x);
+    }
+
 
 }
 
@@ -191,10 +213,20 @@ int main(int argc, char** argv) {
 
 
     do {
-        printf("Elemento: ");
-        scanf("%i", &x);
-        insercaoAVL(&raiz, x);
-        //system("clear");
+        printf("[1] ~ Inserir\n"
+                "[2] ~ Remover\n");
+        scanf("%i", &escolha);
+        switch (escolha) {
+            case 1:
+                printf("Elemento: ");
+                scanf("%i", &x);
+                insercaoAVL(&raiz, x);
+                break; //system("clear");
+            case 2:
+                remover(&raiz, x);
+                break;
+        }
+
         printf("Arvore: ");
         preOrdem(&raiz);
         printf("\n");
