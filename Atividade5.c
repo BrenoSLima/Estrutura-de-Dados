@@ -22,15 +22,11 @@ typedef struct {
 } filaDinamica;
 
 typedef struct {
-    int linha;
-    int coluna;
-    int numero;
-    int qualGrafo;
-} tipoMatriz;
-
-typedef struct {
     int cor;
     int d;
+    int linha;
+    int coluna;
+    int qualGrafo;
 } Grafo;
 
 void iniciaFila(filaDinamica *fila) {
@@ -129,34 +125,13 @@ int maiorValorFila(filaDinamica *fila) {
     return maiorValor;
 }
 
-void bfsMatriz(tipoMatriz **matriz, Grafo mapaGrafo[], int indiceInicial, int tamMatriz) {
+void bfsMatriz(int **matriz, Grafo mapaGrafo[], int tamMatriz) {
 
-    int linhaInicial, colunaInicial;
-
-    for (int i = 0; i < tamMatriz; i++) {
-        for (int j = 0; j < tamMatriz; j++) {
-            if (matriz[i][j].qualGrafo == indiceInicial) {
-                linhaInicial = matriz[i][j].linha;
-                colunaInicial = matriz[i][j].coluna;
-            }
-        }
-    }
-
-    printf("\n");
-    printf("Linha inicial: %i\n", linhaInicial);
-    printf("Coluna inicial: %i\n", colunaInicial);
-
-    for (int i = 0; i < tamMatriz; i++) {
-        for (int j = 0; j < tamMatriz; j++) {
-            printf("%i\t", matriz[i][j].qualGrafo);
-        }
-        printf("\n");
-    }
 
 }
 
 int main(int argc, char** argv) {
-
+    
     FILE *entrada = fopen("input.txt", "r");
     FILE *saida = fopen("output.txt", "w");
 
@@ -192,36 +167,33 @@ int main(int argc, char** argv) {
 
     tamMatriz = maiorValorFila(&fila);
 
-    tipoMatriz **matriz;
+    int **matriz;
     Grafo mapaGrafo[tamMatriz];
 
-    matriz = (tipoMatriz **) malloc(tamMatriz * sizeof (tipoMatriz *));
+    matriz = (int **) malloc(tamMatriz * sizeof (int *));
     for (int i = 0; i < tamMatriz; i++) {
-        matriz[i] = (tipoMatriz *) malloc(tamMatriz * sizeof (tipoMatriz));
+        matriz[i] = (int *) malloc(tamMatriz * sizeof (int));
     }
 
     for (int i = 0; i < tamMatriz; i++) {
         for (int j = 0; j < tamMatriz; j++) {
-            matriz[i][j].linha = i;
-            matriz[i][j].coluna = j;
-            matriz[i][j].numero = 0;
-            matriz[i][j].qualGrafo = -1;
+            matriz[i][j] = 0;
         }
     }
 
-    int linha, coluna, contGrafos = 1;
+    int linha, coluna, contGrafos = 0;
 
     while (fila.contador != 0) {
         linha = removerFila(&fila);
         coluna = removerFila(&fila);
-        matriz[linha - 1][coluna - 1].numero = 1;
-        matriz[linha - 1][coluna - 1].qualGrafo = contGrafos;
+        mapaGrafo[contGrafos].qualGrafo = contGrafos;
+        mapaGrafo[contGrafos].linha = linha;
+        mapaGrafo[contGrafos].coluna = coluna;
+        printf("%i", contGrafos);
         contGrafos++;
     }
 
-
-    bfsMatriz(matriz, mapaGrafo, indiceInicial, tamMatriz);
+    bfsMatriz(matriz, mapaGrafo, tamMatriz);
 
     return (EXIT_SUCCESS);
 }
-
