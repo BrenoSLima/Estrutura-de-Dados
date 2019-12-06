@@ -22,8 +22,9 @@ typedef struct {
 } filaDinamica;
 
 typedef struct {
-    int cor;
+    char cor;
     int d;
+    int pai;
     int linha;
     int coluna;
     int qualGrafo;
@@ -125,13 +126,33 @@ int maiorValorFila(filaDinamica *fila) {
     return maiorValor;
 }
 
-void bfsMatriz(int **matriz, Grafo mapaGrafo[], int tamMatriz) {
+void bfsMatriz(int **matriz, Grafo mapaGrafo[], int tamMatriz, int contGrafos, int indiceInicial) {
 
+  filaDinamica fila;
+  iniciaFila(&fila);
+
+    for(int i = 0; i < contGrafos; i++){
+        if(i != indiceInicial){
+          mapaGrafo[i].cor = 'b';
+          mapaGrafo[i].d = 999;
+          mapaGrafo[i].pai = -1;
+        }
+    }
+
+    mapaGrafo[indiceInicial].cor = 'c';
+    mapaGrafo[indiceInicial].d = '0';
+    mapaGrafo[indiceInicial].pai = -1;
+
+    for(int i = 0; i < tamMatriz; i++ ){
+      for(int j = 0; j < tamMatriz; j++){
+        
+      }
+    }
 
 }
 
 int main(int argc, char** argv) {
-    
+
     FILE *entrada = fopen("input.txt", "r");
     FILE *saida = fopen("output.txt", "w");
 
@@ -189,11 +210,10 @@ int main(int argc, char** argv) {
         mapaGrafo[contGrafos].qualGrafo = contGrafos;
         mapaGrafo[contGrafos].linha = linha;
         mapaGrafo[contGrafos].coluna = coluna;
-        printf("%i", contGrafos);
         contGrafos++;
     }
 
-    bfsMatriz(matriz, mapaGrafo, tamMatriz);
+    bfsMatriz(matriz, mapaGrafo, tamMatriz, contGrafos, indiceInicial);
 
     return (EXIT_SUCCESS);
 }
