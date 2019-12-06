@@ -21,6 +21,18 @@ typedef struct {
     int contador;
 } filaDinamica;
 
+typedef struct {
+    int linha;
+    int coluna;
+    int numero;
+    int qualGrafo;
+} tipoMatriz;
+
+typedef struct {
+    int cor;
+    int d;
+} Grafo;
+
 void iniciaFila(filaDinamica *fila) {
 
     fila->inicio = NULL;
@@ -117,6 +129,32 @@ int maiorValorFila(filaDinamica *fila) {
     return maiorValor;
 }
 
+void bfsMatriz(tipoMatriz **matriz, Grafo mapaGrafo[], int indiceInicial, int tamMatriz) {
+
+    int linhaInicial, colunaInicial;
+
+    for (int i = 0; i < tamMatriz; i++) {
+        for (int j = 0; j < tamMatriz; j++) {
+            if (matriz[i][j].qualGrafo == indiceInicial) {
+                linhaInicial = matriz[i][j].linha;
+                colunaInicial = matriz[i][j].coluna;
+            }
+        }
+    }
+
+    printf("\n");
+    printf("Linha inicial: %i\n", linhaInicial);
+    printf("Coluna inicial: %i\n", colunaInicial);
+
+    for (int i = 0; i < tamMatriz; i++) {
+        for (int j = 0; j < tamMatriz; j++) {
+            printf("%i\t", matriz[i][j].qualGrafo);
+        }
+        printf("\n");
+    }
+
+}
+
 int main(int argc, char** argv) {
 
     FILE *entrada = fopen("input.txt", "r");
@@ -127,8 +165,8 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
-    char ver1, ver2, string[100];
-    int inteiro = 0, tamMatriz = 0;
+    char ver1, ver2, ver3, string[100];
+    int inteiro = 0, tamMatriz = 0, indiceInicial = 0;
     filaDinamica fila;
     iniciaFila(&fila);
 
@@ -141,67 +179,48 @@ int main(int argc, char** argv) {
     fgets(string, 100, entrada);
     printf("%s\n", string);
 
+    ver3 = fgetc(entrada);
+    indiceInicial = atoi(&ver3);
+    printf("VERTICE INICAL NÙEMRO:%i\n", indiceInicial);
+
+
     inteiro = atoi(strtok(string, "(,)\n "));
     while (inteiro != 0) {
         inserirFila(&fila, inteiro);
         inteiro = atoi(strtok(NULL, "(,)\n "));
     }
 
-    imprimeFila(&fila);
-
     tamMatriz = maiorValorFila(&fila);
-    printf("Tamanho Matriz: %i\n", tamMatriz);
 
-    int **matriz;
+    tipoMatriz **matriz;
+    Grafo mapaGrafo[tamMatriz];
 
-    matriz = (int **) malloc(tamMatriz * sizeof (int *));
+    matriz = (tipoMatriz **) malloc(tamMatriz * sizeof (tipoMatriz *));
     for (int i = 0; i < tamMatriz; i++) {
-        matriz[i] = (int *) malloc(tamMatriz * sizeof (int));
+        matriz[i] = (tipoMatriz *) malloc(tamMatriz * sizeof (tipoMatriz));
     }
 
     for (int i = 0; i < tamMatriz; i++) {
         for (int j = 0; j < tamMatriz; j++) {
-            matriz[i][j] = 0;
+            matriz[i][j].linha = i;
+            matriz[i][j].coluna = j;
+            matriz[i][j].numero = 0;
+            matriz[i][j].qualGrafo = -1;
         }
     }
 
-    printf("\n\nPrintando matriz\n\n");
-
-    for (int i = 0; i < tamMatriz; i++) {
-        for (int j = 0; j < tamMatriz; j++) {
-            printf("%i\t", matriz[i][j]);
-        }
-        printf("\n");
-    }
-
-    int linha, coluna;
+    int linha, coluna, contGrafos = 1;
 
     while (fila.contador != 0) {
         linha = removerFila(&fila);
         coluna = removerFila(&fila);
-        printf("Linha: %i\n", linha);
-        printf("Coluna: %i\n", coluna);
-        matriz[linha-1][coluna-1] = 1;
-
-        for (int i = 0; i < tamMatriz; i++) {
-            for (int j = 0; j < tamMatriz; j++) {
-                printf("%i\t", matriz[i][j]);
-            }
-            printf("\n");
-        }
-
-    }
-
-    printf("\n\nPrintando matriz com adjacentes\n\n");
-
-    for (int i = 0; i < tamMatriz; i++) {
-        for (int j = 0; j < tamMatriz; j++) {
-            printf("%i\t", matriz[i][j]);
-        }
-        printf("\n");
+        matriz[linha - 1][coluna - 1].numero = 1;
+        matriz[linha - 1][coluna - 1].qualGrafo = contGrafos;
+        contGrafos++;
     }
 
 
+    bfsMatriz(matriz, mapaGrafo, indiceInicial, tamMatriz);
 
     return (EXIT_SUCCESS);
 }
